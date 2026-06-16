@@ -5,6 +5,9 @@
 trigger:
 - main
 
+pool:
+  vmImage: "ubuntu-latest"
+
 resources:
 - repo: self
 
@@ -17,8 +20,6 @@ stages:
   jobs:
   - job: Build
     displayName: Build
-    pool:
-      vmImage: "ubuntu-latest"
     steps:
     - task: Docker@2
       displayName: Build an image
@@ -27,4 +28,26 @@ stages:
         dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
         tags: |
           $(tag)
-  
+
+- stage: Test
+  displayName: 'Test Stage'
+  dependsOn: Build
+  isSkippable: false
+  jobs:
+  - job: TestJob
+    displayName: 'Test Job'
+    steps:
+    - script: |
+        echo "Running unit tests..."
+      displayName: 'Run unit tests'
+
+- stage: DeployToStaging
+  displayName: 'Deploy to Staging'
+  dependsOn: Test
+  jobs:
+  - job: DeployStagingJob
+    displayName: 'Deploy to Staging Job'
+    steps:
+    - script: |
+        echo "Build staging job..."
+      displayName: 'Build and deploy to staging'
