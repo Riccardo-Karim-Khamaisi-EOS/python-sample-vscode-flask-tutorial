@@ -27,3 +27,8 @@ stages:
         dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
         tags: |
           $(tag)
+    - task: PublishCodeCoverageResults@2
+      inputs:
+        summaryFileLocation: "$(System.DefaultWorkingDirectory)/**/site/report/report.xml" # Path to summary files
+        reportDirectory: "$(System.DefaultWorkingDirectory)/**/site/report" # Path to report directory
+        failIfCoverageEmpty: true # Fail if code coverage results are missing
